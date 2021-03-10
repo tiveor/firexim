@@ -1,4 +1,5 @@
 firexim<br/>
+[![Build Status](https://travis-ci.org/tiveor/firexim.svg?branch=main)](https://travis-ci.org/tiveor/firexim)
 [![npm version](https://badge.fury.io/js/%40tiveor%2Ffirexim.svg)](https://badge.fury.io/js/%40tiveor%2Ffirexim)
 =============================
 
