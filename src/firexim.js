@@ -82,7 +82,7 @@ class Firexim {
           var docs = [];
           snapshot.forEach((doc) => {
             const data = doc.data();
-            docs.push(data);
+            docs.push({ ...data, id: doc.id });
           });
 
           const json = JSON.stringify(docs);
@@ -107,7 +107,12 @@ class Firexim {
         var docs = JSON.parse(fs.readFileSync(filename, 'utf8'));
         const batch = this.getFirestoreAt(index).batch();
         docs.forEach((doc) => {
-          const myRef = this.getFirestoreAt(index).collection(collection).doc(doc.id);
+          let myRef = this.getFirestoreAt(index).collection(collection);
+          if (doc.id) {
+            myRef = myRef.doc(doc.id);
+          } else {
+            myRef = myRef.doc();
+          }
           batch.set(myRef, doc);
         });
         batch.commit();
