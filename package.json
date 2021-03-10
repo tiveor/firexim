@@ -17,6 +17,11 @@
     "type": "git",
     "url": "git+https://github.com/tiveor/firexim.git"
   },
+  "keywords": [
+    "firestore",
+    "export",
+    "import"
+  ],
   "author": "Alvaro Orellana",
   "license": "MIT",
   "bugs": {
