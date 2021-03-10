@@ -1,0 +1,30 @@
+{
+  "name": "@tiveor/firexim",
+  "version": "0.1.0",
+  "description": "A Firebase for Firestore Export/Import library",
+  "main": "index.js",
+  "bin": {
+    "firexim": "./bin/index.js"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.0",
+    "prettier": "^2.2.1"
+  },
+  "scripts": {
+    "test": "mocha ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tiveor/firexim.git"
+  },
+  "author": "Alvaro Orellana",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tiveor/firexim/issues"
+  },
+  "homepage": "https://github.com/tiveor/firexim#readme",
+  "dependencies": {
+    "@tiveor/scg": "^0.1.5",
+    "firebase-admin": "^9.5.0"
+  }
+}
