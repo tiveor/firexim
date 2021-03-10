@@ -1,4 +1,6 @@
-# firexim
+firexim<br/>
+[![npm version](https://badge.fury.io/js/%40tiveor%2Ffirexim.svg)](https://badge.fury.io/js/%40tiveor%2Ffirexim)
+=============================
 
 A Firestore Export/Import Library and CLI
 
@@ -45,7 +47,7 @@ firexim
   })
 ```
 
-### Library Import Collection
+### Library Export/Import Collection
 
 ```javascript
 firexim
