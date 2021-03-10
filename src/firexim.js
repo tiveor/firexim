@@ -47,15 +47,15 @@ class Firexim {
     return this.firestores[index];
   }
 
-  getImportCollectionNames = () => {
+  getImportCollectionNames() {
     return this.getCollectionNames(this.importIndex);
   }
 
-  getExportCollectionNames = () => {
+  getExportCollectionNames() {
     return this.getCollectionNames(this.exportIndex);
   }
 
-  getCollectionNames = (index) => {
+  getCollectionNames(index) {
     return new Promise((resolve, reject) => {
       try {
         let collectionNames = [];
@@ -71,11 +71,11 @@ class Firexim {
     });
   }
 
-  exportCollectionToFile = (collection, filename) => {
+  exportCollectionToFile(collection, filename) {
     return this.exportCollectionToFileByIndex(0, collection, filename);
   }
 
-  exportCollectionToFileByIndex = (index, collection, filename) => {
+  exportCollectionToFileByIndex(index, collection, filename) {
     return new Promise((resolve, reject) => {
       try {
         this.getFirestoreAt(index).collection(collection).get().then((snapshot) => {
@@ -97,11 +97,11 @@ class Firexim {
     });
   }
 
-  importCollectionFromFile = (collection, filename) => {
+  importCollectionFromFile(collection, filename) {
     return this.importCollectionFromFileByIndex(0, collection, filename);
   }
 
-  importCollectionFromFileByIndex = (index, collection, filename) => {
+  importCollectionFromFileByIndex(index, collection, filename) {
     return new Promise((resolve, reject) => {
       try {
         var docs = JSON.parse(fs.readFileSync(filename, 'utf8'));
@@ -119,7 +119,7 @@ class Firexim {
     })
   }
 
-  importCollection = (collectionFrom, collectionTo) => {
+  importCollection(collectionFrom, collectionTo) {
     return new Promise((resolve, reject) => {
       this.getFirestoreImport().collection(collectionFrom).get().then((snapshot) => {
         const batch = this.getFirestoreExport().batch();
