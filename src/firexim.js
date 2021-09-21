@@ -2,7 +2,6 @@ const admin = require('firebase-admin');
 const fs = require('fs');
 
 class Firexim {
-
   constructor(configJsonFiles) {
     this.firestores = [];
     for (let i = 0; i < configJsonFiles.length; i++) {
@@ -12,14 +11,17 @@ class Firexim {
     }
 
     this.importIndex = 0;
-    this.exportIndex = 1;//Default index for export
+    this.exportIndex = 1; //Default index for export
   }
 
   initializeFirestore(configJsonFile, nameRef) {
     const serviceAccount = JSON.parse(fs.readFileSync(configJsonFile));
-    const ref = admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
-    }, nameRef);
+    const ref = admin.initializeApp(
+      {
+        credential: admin.credential.cert(serviceAccount),
+      },
+      nameRef,
+    );
     return ref.firestore();
   }
 
@@ -59,12 +61,14 @@ class Firexim {
     return new Promise((resolve, reject) => {
       try {
         let collectionNames = [];
-        this.getFirestoreAt(index).listCollections().then((collections) => {
-          for (let collection of collections) {
-            collectionNames.push(collection.id);
-          }
-          resolve(collectionNames);
-        })
+        this.getFirestoreAt(index)
+          .listCollections()
+          .then((collections) => {
+            for (let collection of collections) {
+              collectionNames.push(collection.id);
+            }
+            resolve(collectionNames);
+          });
       } catch (e) {
         reject(e);
       }
@@ -78,19 +82,23 @@ class Firexim {
   exportCollectionToFileByIndex(index, collection, filename) {
     return new Promise((resolve, reject) => {
       try {
-        this.getFirestoreAt(index).collection(collection).get().then((snapshot) => {
-          var docs = [];
-          snapshot.forEach((doc) => {
-            const data = doc.data();
-            docs.push({ ...data, id: doc.id });
-          });
+        this.getFirestoreAt(index)
+          .collection(collection)
+          //.where("d.uidCompany", "==", "MynzlRf6mMbT65eB22MR")
+          .get()
+          .then((snapshot) => {
+            var docs = [];
+            snapshot.forEach((doc) => {
+              const data = doc.data();
+              docs.push({ ...data, id: doc.id });
+            });
 
-          const json = JSON.stringify(docs);
+            const json = JSON.stringify(docs);
 
-          fs.writeFile(`${filename}`, json, 'utf8', (x) => {
-            resolve(filename);
+            fs.writeFile(`${filename}`, json, 'utf8', (x) => {
+              resolve(filename);
+            });
           });
-        });
       } catch (e) {
         reject(e);
       }
@@ -121,31 +129,34 @@ class Firexim {
         console.log(e);
         reject(e);
       }
-    })
+    });
   }
 
   importCollection(collectionFrom, collectionTo) {
     return new Promise((resolve, reject) => {
-      this.getFirestoreImport().collection(collectionFrom).get().then((snapshot) => {
-        const batch = this.getFirestoreExport().batch();
-        try {
-          snapshot.forEach((doc) => {
-            const data = doc.data();
+      this.getFirestoreImport()
+        .collection(collectionFrom)
+        .get()
+        .then((snapshot) => {
+          const batch = this.getFirestoreExport().batch();
+          try {
+            snapshot.forEach((doc) => {
+              const data = doc.data();
 
-            const myRef = this.getFirestoreExport().collection(collectionTo).doc(doc.id);
-            batch.set(myRef, data);
-          });
-          batch.commit();
-          resolve(true);
-        } catch (e) {
-          console.log(e);
-          reject(e);
-        }
-      });
+              const myRef = this.getFirestoreExport().collection(collectionTo).doc(doc.id);
+              batch.set(myRef, data);
+            });
+            batch.commit();
+            resolve(true);
+          } catch (e) {
+            console.log(e);
+            reject(e);
+          }
+        });
     });
   }
 }
 
 module.exports = {
-  Firexim
+  Firexim,
 };
