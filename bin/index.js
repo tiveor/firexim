@@ -32,6 +32,8 @@ const exp = () => {
   if (!validateParams([params.fromConfig, params.fromCollection, params.toFile])) return;
 
   const firexim = new Firexim([params.fromConfig]);
+  firexim.setExportDateFields(params.dateFields);
+  firexim.setFilter(params.filter);
 
   firexim.exportCollectionToFile(params.fromCollection, params.toFile).then((filename) => {
     console.log(`${filename} exported succesfully`);

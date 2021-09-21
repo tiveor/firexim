@@ -12,6 +12,35 @@ class Firexim {
 
     this.importIndex = 0;
     this.exportIndex = 1; //Default index for export
+    this.filter = null;
+  }
+
+  setExportDateFields(fields) {
+    if (!fields) return;
+
+    this.dateFields = fields.split(',').map(function (field) {
+      return field.trim();
+    });
+  }
+
+  setFilter(filter) {
+    if (!filter) return;
+    const filterValues = filter.split(',');
+
+    if (filterValues.length !== 3) return;
+
+    let value = filterValues[2];
+    if (value[0] == "'" || value[value.length - 1] == "'") {
+      value = value.replace(/["']/g, '');
+    } else {
+      if (value === 'true' || value === 'false') {
+        value = value === 'true';
+      } else {
+        value = parseInt(value);
+      }
+    }
+
+    this.filter = { field: filterValues[0], condition: filterValues[1], value: value };
   }
 
   initializeFirestore(configJsonFile, nameRef) {
@@ -79,26 +108,43 @@ class Firexim {
     return this.exportCollectionToFileByIndex(0, collection, filename);
   }
 
+  processDateFields(data) {
+    let x = data;
+    if (this.dateFields) {
+      for (let field of this.dateFields) {
+        if (field in data) {
+          x[field] = data[field].toDate().toISOString();
+        }
+      }
+    }
+    return x;
+  }
+
   exportCollectionToFileByIndex(index, collection, filename) {
     return new Promise((resolve, reject) => {
       try {
-        this.getFirestoreAt(index)
-          .collection(collection)
-          //.where("d.uidCompany", "==", "MynzlRf6mMbT65eB22MR")
-          .get()
-          .then((snapshot) => {
-            var docs = [];
-            snapshot.forEach((doc) => {
-              const data = doc.data();
-              docs.push({ ...data, id: doc.id });
-            });
+        let query = this.getFirestoreAt(index).collection(collection);
 
-            const json = JSON.stringify(docs);
+        if (this.filter) {
+          const { field, condition, value } = this.filter;
+          query = query.where(field, condition, value);
+        }
 
-            fs.writeFile(`${filename}`, json, 'utf8', (x) => {
-              resolve(filename);
-            });
+        query.get().then((snapshot) => {
+          var docs = [];
+          snapshot.forEach((doc) => {
+            let data = doc.data();
+            data = this.processDateFields(data);
+            const newJsonObj = { ...data, id: doc.id };
+            docs.push(newJsonObj);
           });
+
+          const json = JSON.stringify(docs);
+
+          fs.writeFile(`${filename}`, json, 'utf8', (x) => {
+            resolve(filename);
+          });
+        });
       } catch (e) {
         reject(e);
       }
